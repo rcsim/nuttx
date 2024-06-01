@@ -55,10 +55,14 @@
 
 void weak_function stm32_spidev_initialize(void)
 {
-#ifdef CONFIG_STM32_SPI1
+#ifdef CONFIG_LCD_SSD1306
   stm32_configgpio(GPIO_OLED_CS);    /* OLED chip select */
 #endif
 }
+
+#ifdef CONFIG_LCD_MAX7219
+  stm32_configgpio(GPIO_MAX7219_CS);    /* MAX7219 chip select */
+#endif
 
 /****************************************************************************
  * Name:  stm32_spi1/2/3select and stm32_spi1/2/3status
@@ -93,7 +97,20 @@ void stm32_spi1select(struct spi_dev_s *dev,
   spiinfo("devid: %d CS: %s\n",
           (int)devid, selected ? "assert" : "de-assert");
 
-  stm32_gpiowrite(GPIO_OLED_CS, !selected);
+#ifdef CONFIG_LCD_SSD1306
+  if (devid == SPIDEV_DISPLAY(0))
+    {
+      stm32_gpiowrite(GPIO_OLED_CS, !selected);
+    }
+#endif
+
+#ifdef CONFIG_LCD_MAX7219
+  if (devid == SPIDEV_DISPLAY(0))
+    {
+      stm32_gpiowrite(GPIO_MAX7219_CS, !selected);
+    }
+#endif
+
 }
 
 uint8_t stm32_spi1status(struct spi_dev_s *dev, uint32_t devid)

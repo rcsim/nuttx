@@ -103,6 +103,13 @@
                            GPIO_OUTPUT_CLEAR|GPIO_PORTB|GPIO_PIN8)
 #endif
 
+/* MAX7219 */
+
+#if defined(CONFIG_LCD_MAX7219)
+#  define GPIO_MAX7219_CS    (GPIO_OUTPUT|GPIO_PUSHPULL|GPIO_SPEED_50MHz|\
+                           GPIO_OUTPUT_SET|GPIO_PORTB|GPIO_PIN7)
+#endif
+
 /* SPI1 off */
 
 #define GPIO_SPI1_MOSI_OFF (GPIO_INPUT | GPIO_PULLDOWN | \
