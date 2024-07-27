@@ -103,6 +103,16 @@
                            GPIO_OUTPUT_CLEAR|GPIO_PORTB|GPIO_PIN8)
 #endif
 
+/* MAX7219 */
+
+#define GPIO_CS_MFRC522 (GPIO_OUTPUT|GPIO_PUSHPULL|GPIO_SPEED_50MHz|\
+                           GPIO_OUTPUT_SET|GPIO_PORTC|GPIO_PIN5)
+
+/* MAX7219 */
+
+#define STM32_LCD_CS (GPIO_OUTPUT|GPIO_PUSHPULL|GPIO_SPEED_50MHz|\
+                           GPIO_OUTPUT_SET|GPIO_PORTC|GPIO_PIN4)
+
 /* SPI1 off */
 
 #define GPIO_SPI1_MOSI_OFF (GPIO_INPUT | GPIO_PULLDOWN | \
@@ -269,6 +279,18 @@ int stm32_at24_init(char *path);
 
 #ifdef CONFIG_ADC
 int stm32_adc_setup(void);
+#endif
+
+/****************************************************************************
+ * Name: stm32_mfrc522initialize
+ *
+ * Description:
+ *   Function used to initialize the MFRC522 RFID Transceiver
+ *
+ ****************************************************************************/
+
+#ifdef CONFIG_CL_MFRC522
+int stm32_mfrc522initialize(const char *devpath);
 #endif
 
 #endif /* __BOARDS_ARM_STM32_STM32F401RC_RS485_SRC_STM32F401RC_RS485_H */
