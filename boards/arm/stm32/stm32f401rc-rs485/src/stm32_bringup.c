@@ -79,6 +79,10 @@
 #include "stm32_bmp280.h"
 #endif
 
+#ifdef CONFIG_RTC_DS1307
+#include "stm32_ds1307.h"
+#endif
+
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
@@ -309,6 +313,15 @@ int stm32_bringup(void)
   if (ret < 0)
     {
       syslog(LOG_ERR, "Failed to initialize BMP280, error %d\n", ret);
+      return ret;
+    }
+#endif
+
+#ifdef CONFIG_RTC_DS1307
+  ret = board_ds1307_initialize(1);
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "Failed to initialize DS1307 RTC driver: %d\n", ret);
       return ret;
     }
 #endif

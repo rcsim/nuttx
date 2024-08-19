@@ -710,3 +710,28 @@ NSH commands::
        Temperature [C] = 24.490000
        
 There is a known issue where every time the sensor is initialized, the first measurement is wrong, please check https://github.com/apache/nuttx/issues/12421 for the latest updates on this issue.
+
+ds1307
+------
+
+Configures the NuttShell (nsh) over USB Serial (check usbserial configuration) and enables Real-time Clock using Maxim Integrated DS1307 Serial Real-Time Clock.
+
+NSH commands::
+
+       NuttShell (NSH) NuttX-12.6.0-RC1
+       nsh> date
+       Mon, Aug 19 20:35:13 2024
+
+Power off, wait few seconds and power on the board::
+
+       NuttShell (NSH) NuttX-12.6.0-RC1
+       nsh> date
+       Mon, Aug 19 20:35:48 2024                                                                            
+                                                                                 
+Setting the date/time using command date::
+
+       NuttShell (NSH) NuttX-12.6.0-RC1
+       nsh> date -s "AUG 20 20:36:00 2024"   
+       nsh> date
+       Tue, Aug 20 20:36:15 2024
+       nsh> 
