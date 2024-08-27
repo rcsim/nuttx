@@ -93,6 +93,10 @@
 #  include "esp_board_mcpwm.h"
 #endif
 
+#ifdef CONFIG_LCD_BACKPACK
+#  include "esp_lcd_backpack.h"
+#endif
+
 #include "esp32c6-devkitc.h"
 
 /****************************************************************************
@@ -353,6 +357,16 @@ int esp_bringup(void)
   if (ret < 0)
     {
       syslog(LOG_ERR, "ERROR: board_motor_initialize failed: %d\n", ret);
+    }
+#endif
+
+#ifdef CONFIG_LCD_BACKPACK
+  /* slcd:0, i2c:0, rows=2, cols=16 */
+
+  ret = board_lcd_backpack_init(0, 0, 2, 16);
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "Failed to initialize PCF8574 LCD, error %d\n", ret);
     }
 #endif
 
