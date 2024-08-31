@@ -36,5 +36,9 @@
 
 #define BUTTON_BOOT  9
 
+/* Define how many LEDs this board has (needed by userleds) */
+
+#define BOARD_NLEDS       1
+
 #endif /* __BOARDS_RISCV_ESP32C6_ESP32C6_DEVKITC_INCLUDE_BOARD_H */
 

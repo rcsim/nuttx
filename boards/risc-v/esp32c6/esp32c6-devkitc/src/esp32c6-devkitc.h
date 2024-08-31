@@ -44,6 +44,13 @@
 #  define RMT_OUTPUT_PIN    8
 #endif
 
+/* LED
+ *
+ * This is an externally connected LED used for testing.
+ */
+
+#define GPIO_LED1             10
+
 /****************************************************************************
  * Public Types
  ****************************************************************************/

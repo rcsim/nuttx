@@ -93,6 +93,10 @@
 #  include "esp_board_mcpwm.h"
 #endif
 
+#ifdef CONFIG_USERLED
+#  include <nuttx/leds/userled.h>
+#endif
+
 #include "esp32c6-devkitc.h"
 
 /****************************************************************************
@@ -244,6 +248,16 @@ int esp_bringup(void)
   if (ret < 0)
     {
       syslog(LOG_ERR, "Failed to initialize I2C driver: %d\n", ret);
+    }
+#endif
+
+#ifdef CONFIG_USERLED
+  /* Register the LED driver */
+
+  ret = userled_lower_initialize("/dev/userleds");
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "ERROR: userled_lower_initialize() failed: %d\n", ret);
     }
 #endif
 
