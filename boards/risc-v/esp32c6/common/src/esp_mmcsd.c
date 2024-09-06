@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/risc-v/esp32c6/common/src/esp_board_spi.c
+ * boards/risc-v/esp32c6/common/src/esp_mmcsd.c
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -22,15 +22,24 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
-
-#include <stdint.h>
-#include <stdbool.h>
 #include <debug.h>
-
+#include <nuttx/config.h>
+#include <nuttx/mmcsd.h>
 #include <nuttx/spi/spi.h>
+#include <pthread.h>
+#include <sched.h>
+#include <time.h>
+#include <unistd.h>
 
-#include "espressif/esp_gpio.h"
+#include "espressif/esp_spi.h"
+
+/****************************************************************************
+ * Pre-processor Definitions
+ ****************************************************************************/
+
+/****************************************************************************
+ * Private Definitions
+ ****************************************************************************/
 
 /****************************************************************************
  * Private Functions
@@ -41,50 +50,34 @@
  ****************************************************************************/
 
 /****************************************************************************
- * Name: esp_spi2_status
+ * Name: esp_mmcsd_initialize
+ *
+ * Description:
+ *   Initialize SPI-based SD card and card detect thread.
  ****************************************************************************/
 
-#ifdef CONFIG_ESPRESSIF_SPI2
-
-uint8_t esp_spi2_status(struct spi_dev_s *dev, uint32_t devid)
+int esp_mmcsd_initialize(int minor)
 {
-  uint8_t status = 0;
+  struct spi_dev_s *spi;
+  int rv;
 
-  #ifdef CONFIG_MMCSD_SPI
-  if (devid == SPIDEV_MMCSD(0))
+  mcinfo("INFO: Initializing mmcsd card\n");
+
+  spi = esp_spibus_initialize(CONFIG_NSH_MMCSDSPIPORTNO);
+  if (spi == NULL)
     {
-       status |= SPI_STATUS_PRESENT;
-    }
-  #endif
-
-  return status;
-}
-
-#endif
-
-/****************************************************************************
- * Name: esp_spi2_cmddata
- ****************************************************************************/
-
-#if defined(CONFIG_ESPRESSIF_SPI2) && defined(CONFIG_SPI_CMDDATA)
-
-int esp_spi2_cmddata(struct spi_dev_s *dev, uint32_t devid, bool cmd)
-{
-  if (devid == SPIDEV_DISPLAY(0))
-    {
-      /*  This is the Data/Command control pad which determines whether the
-       *  data bits are data or a command.
-       */
-
-      esp_gpiowrite(CONFIG_ESPRESSIF_SPI2_MISOPIN, !cmd);
-
-      return OK;
+      mcerr("ERROR: Failed to initialize SPI port %d\n", 2);
+      return -ENODEV;
     }
 
-  spiinfo("devid: %" PRIu32 " CMD: %s\n", devid, cmd ? "command" :
-          "data");
+  rv = mmcsd_spislotinitialize(minor, 0, spi);
+  if (rv < 0)
+    {
+      mcerr("ERROR: Failed to bind SPI port %d to SD slot %d\n",
+            2, 0);
+      return rv;
+    }
 
-  return -ENODEV;
+  spiinfo("INFO: mmcsd card has been initialized successfully\n");
+  return OK;
 }
-
-#endif

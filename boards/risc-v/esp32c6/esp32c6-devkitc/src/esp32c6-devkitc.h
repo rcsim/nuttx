@@ -82,6 +82,15 @@
 int esp_bringup(void);
 
 /****************************************************************************
+ * Name: esp_mmcsd_initialize
+ *
+ * Description:
+ *   Initialize SPI-based SD card and card detect thread.
+ ****************************************************************************/
+
+int esp_mmcsd_initialize(int minor);
+
+/****************************************************************************
  * Name: board_twai_setup
  *
  * Description:

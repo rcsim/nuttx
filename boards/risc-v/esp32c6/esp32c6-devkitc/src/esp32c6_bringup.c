@@ -236,6 +236,14 @@ int esp_bringup(void)
     }
 #endif
 
+#ifdef CONFIG_MMCSD
+  ret = esp_mmcsd_initialize(0);
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "Failed to initialize SD slot: %d\n", ret);
+    }
+#endif
+
 #if defined(CONFIG_I2C_DRIVER)
   /* Configure I2C peripheral interfaces */
 
