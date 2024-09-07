@@ -93,6 +93,10 @@
 #  include "esp_board_mcpwm.h"
 #endif
 
+#ifdef CONFIG_LCD_MAX7219
+#include "esp_max7219_matrix.h"
+#endif
+
 #include "esp32c6-devkitc.h"
 
 /****************************************************************************
@@ -135,6 +139,17 @@ int esp_bringup(void)
   if (ret < 0)
     {
       _err("Failed to mount procfs at /proc: %d\n", ret);
+    }
+#endif
+
+#ifdef CONFIG_LCD_MAX7219
+  /* Configure and initialize the MAX7219 driver */
+
+  ret = board_max7219_matrix_initialize(2);
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, \
+       "ERROR: board_max7219_matrix_initialize failed: %d\n", ret);
     }
 #endif
 
