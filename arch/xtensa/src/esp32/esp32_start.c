@@ -229,7 +229,7 @@ static noreturn_function void __esp32_start(void)
 
   _info("ESP32 chip revision is v%d.%01d\n", chip_rev / 100, chip_rev % 100);
 
-  if (chip_rev < 300)
+  if (chip_rev < 100)
     {
 #ifndef ESP32_IGNORE_CHIP_REVISION_CHECK
       ets_printf("ERROR: NuttX supports ESP32 chip revision >= v3.0"
