@@ -83,6 +83,10 @@
 #include "stm32_lcd_backpack.h"
 #endif
 
+#ifdef CONFIG_WS2812
+#include "stm32_ws2812.h"
+#endif
+
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
@@ -328,5 +332,16 @@ int stm32_bringup(void)
     }
 #endif
 
-  return ret;
+#ifdef CONFIG_WS2812
+  /* Configure and initialize the WS2812 LEDs. */
+
+  ret = board_ws2812_initialize(0, WS2812_SPI, WS2812_NLEDS);
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "ERROR: board_ws2812_initialize() failed: %d\n", ret);
+      return ret;
+    }
+#endif
+
+    return ret;
 }
