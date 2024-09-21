@@ -84,6 +84,12 @@
       GPIO_SPEED_50MHz)
 #endif
 
+#ifdef CONFIG_MMCSD_SPI
+#  define GPIO_SDCARD_CS \
+     (GPIO_PORTA | GPIO_PIN8 | GPIO_OUTPUT_SET | GPIO_OUTPUT | GPIO_PUSHPULL | \
+      GPIO_SPEED_50MHz)
+#endif
+
 /* GPIO pins used by the GPIO Subsystem */
 
 #define BOARD_NGPIOIN     1 /* Amount of GPIO Input pins */
@@ -266,6 +272,18 @@ int board_timer_driver_initialize(const char *devpath, int timer);
 
 #ifdef CONFIG_SENSORS_QENCODER
 int stm32l4_qencoder_initialize(const char *devpath, int timer);
+#endif
+
+/****************************************************************************
+ * Name: stm32_mmcsd_initialize
+ *
+ * Description:
+ *   Initializes SPI-based SD card
+ *
+ ****************************************************************************/
+
+#ifdef CONFIG_MMCSD
+int stm32_mmcsd_initialize(int minor);
 #endif
 
 #endif /* __BOARDS_ARM_STM32L4_NUCLEO_L432KC_SRC_NUCLEO_L432KC_H */

@@ -114,6 +114,11 @@ void stm32l4_spiinitialize(void)
 #ifdef CONFIG_MTD_AT45DB
   stm32l4_configgpio(AT45DB_SPI1_CS);      /* FLASH chip select */
 #endif
+
+#ifdef CONFIG_MMCSD_SPI
+  stm32l4_configgpio(GPIO_SDCARD_CS);      /* FLASH chip select */
+#endif
+
 #endif
 
 #ifdef CONFIG_STM32L4_SPI2
@@ -170,6 +175,13 @@ void stm32l4_spi1select(struct spi_dev_s *dev, uint32_t devid,
   if (devid == SPIDEV_FLASH(0))
     {
       stm32l4_gpiowrite(AT45DB_SPI1_CS, !selected);
+    }
+#endif
+
+#ifdef CONFIG_MMCSD_SPI
+  if (devid == SPIDEV_MMCSD(0))
+    {
+      stm32l4_gpiowrite(GPIO_SDCARD_CS, !selected);
     }
 #endif
 }

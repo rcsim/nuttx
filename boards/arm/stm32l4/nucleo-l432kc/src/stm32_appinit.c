@@ -60,6 +60,14 @@
 #  define HAVE_I2C_DRIVER 1
 #endif
 
+/* Checking needed by MMC/SDCard */
+
+#ifdef CONFIG_NSH_MMCSDMINOR
+#  define MMCSD_MINOR CONFIG_NSH_MMCSDMINOR
+#else
+#  define MMCSD_MINOR 0
+#endif
+
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
@@ -377,6 +385,15 @@ int board_app_initialize(uintptr_t arg)
     {
       syslog(LOG_ERR, "ERROR: Failed to register the qencoder: %d\n",
              ret);
+      return ret;
+    }
+#endif
+
+#ifdef CONFIG_MMCSD
+  ret = stm32_mmcsd_initialize(MMCSD_MINOR);
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "Failed to initialize SD slot %d: %d\n", ret);
       return ret;
     }
 #endif

@@ -84,4 +84,8 @@ ifeq ($(CONFIG_NUCLEOL432KC_DAC_WGEN),y)
 CSRCS += stm32_dac_wgen.c
 endif
 
+ifeq ($(CONFIG_MMCSD),y)
+  CSRCS += stm32_mmcsd.c
+endif
+
 include $(TOPDIR)/boards/Board.mk
