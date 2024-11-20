@@ -65,6 +65,10 @@ if(CONFIG_USBMSC)
   list(APPEND SRCS stm32_usbmsc.c)
 endif()
 
+if(CONFIG_USBDEV_COMPOSITE)
+  list(APPEND SRCS stm32_composite.c)
+endif()
+
 target_sources(board PRIVATE ${SRCS})
 
 if(CONFIG_ARCH_CHIP_STM32F401RC)

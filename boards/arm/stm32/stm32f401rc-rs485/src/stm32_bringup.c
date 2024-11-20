@@ -89,6 +89,10 @@
 #include "stm32_ws2812.h"
 #endif
 
+#ifdef CONFIG_USBADB
+#  include <nuttx/usb/adb.h>
+#endif
+
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
@@ -343,6 +347,28 @@ int stm32_bringup(void)
       syslog(LOG_ERR, "ERROR: board_ws2812_initialize() failed: %d\n", ret);
     }
 #endif
+
+#ifdef CONFIG_USBDEV_COMPOSITE
+
+#ifndef CONFIG_BOARDCTL_USBDEVCTRL
+  ret = board_composite_initialize(0);
+  if (ret != OK)
+    {
+      syslog(LOG_ERR, "Failed to initialize composite: %d\n", ret);
+      return ret;
+    }
+
+  if (board_composite_connect(0, 0) == NULL)
+    {
+      syslog(LOG_ERR, "Failed to connect composite: %d\n", ret);
+      return ret;
+    }
+#endif /* !CONFIG_BOARDCTL_USBDEVCTRL */
+#else
+#ifdef CONFIG_USBADB
+  usbdev_adb_initialize();
+#endif
+#endif /* CONFIG_USBDEV_COMPOSITE */
 
   return ret;
 }
