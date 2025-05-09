@@ -1,5 +1,5 @@
 /****************************************************************************
- * boards/arm/stm32/stm32f401rc-rs485/src/stm32_adc.c
+ * boards/arm/stm32/stm32f401rc-rs485/src/stm32_hx711.c
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -25,95 +25,80 @@
  ****************************************************************************/
 
 #include <nuttx/config.h>
-
-#include <errno.h>
+#include <nuttx/analog/hx711.h>
+#include <nuttx/compiler.h>
+#include <arch/board/board.h>
+#include <arch/stm32/chip.h>
 #include <debug.h>
 
-#include <nuttx/board.h>
-#include <nuttx/analog/adc.h>
-#include <arch/board/board.h>
-
-#include "chip.h"
-#include "arm_internal.h"
-#include "stm32_pwm.h"
-#include "stm32_adc.h"
+#include "stm32_gpio.h"
 #include "stm32f401rc-rs485.h"
 
-#if defined(CONFIG_ADC) && defined(CONFIG_STM32_ADC1)
-
 /****************************************************************************
- * Pre-processor Definitions
+ * Private Function Prototypes
  ****************************************************************************/
 
-/* The number of ADC channels in the conversion list */
-
-#define ADC1_NCHANNELS 2
+static int stm32_hx711_clock_set(unsigned char minor, int value);
+static int stm32_hx711_data_read(unsigned char minor);
+static int stm32_hx711_data_irq(unsigned char minor,
+                                xcpt_t handler, void *arg);
 
 /****************************************************************************
  * Private Data
  ****************************************************************************/
 
-/* Identifying number of each ADC channel. */
-
-/* There are two trimpots on the board connected to ADC1_IN0 and ADC1_IN4 */
-
-static const uint8_t  g_adc1_chanlist[ADC1_NCHANNELS] =
+struct hx711_lower_s g_lower =
 {
-  0, 4
+  .data_read = stm32_hx711_data_read,
+  .clock_set = stm32_hx711_clock_set,
+  .data_irq  = stm32_hx711_data_irq,
+  .cleanup = NULL
 };
 
-/* Configurations of pins used byte each ADC channels */
+/****************************************************************************
+ * Private Functions
+ ****************************************************************************/
 
-static const uint32_t g_adc1_pinlist[ADC1_NCHANNELS]  =
+static int stm32_hx711_clock_set(unsigned char minor, int value)
 {
-  GPIO_ADC1_IN0,
-  GPIO_ADC1_IN4
+  UNUSED(minor);
+
+  stm32_gpiowrite(HX711_CLK_PIN, value);
+  return OK;
+}
+
+static int stm32_hx711_data_read(unsigned char minor)
+{
+  UNUSED(minor);
+
+  return stm32_gpioread(HX711_DATA_PIN);
+}
+
+static int stm32_hx711_data_irq(unsigned char minor,
+                                xcpt_t handler, void *arg)
+{
+  UNUSED(minor);
+
+  return stm32_gpiosetevent(HX711_DATA_PIN, false, true, true, handler, arg);
 };
 
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
 
-/****************************************************************************
- * Name: stm32_adc_setup
- *
- * Description:
- *   Initialize ADC and register the ADC driver.
- *
- ****************************************************************************/
-
-int stm32_adc_setup(void)
+int stm32_hx711_initialize(void)
 {
-  struct adc_dev_s *adc;
   int ret;
-  int i;
 
-  /* Configure the pins as analog inputs for the selected channels */
+  stm32_configgpio(HX711_DATA_PIN);
+  stm32_configgpio(HX711_CLK_PIN);
 
-  for (i = 0; i < ADC1_NCHANNELS; i++)
+  ret = hx711_register(0, &g_lower);
+  if (ret != 0)
     {
-      stm32_configgpio(g_adc1_pinlist[i]);
-    }
-
-  /* Call stm32_adcinitialize() to get an instance of the ADC interface */
-
-  adc = stm32_adcinitialize(1, g_adc1_chanlist, ADC1_NCHANNELS);
-  if (adc == NULL)
-    {
-      aerr("ERROR: Failed to get ADC interface\n");
-      return -ENODEV;
-    }
-
-  /* Register the ADC driver at "/dev/adc0" */
-
-  ret = adc_register("/dev/adc0", adc);
-  if (ret < 0)
-    {
-      aerr("ERROR: adc_register failed: %d\n", ret);
-      return ret;
+      aerr("ERROR: Failed to register hx711 device: %d\n", ret);
+      return -1;
     }
 
   return OK;
 }
-
-#endif /* CONFIG_STM32_ADC1 */
