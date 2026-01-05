@@ -166,6 +166,10 @@ ifeq ($(CONFIG_INPUT_SBUTTON),y)
   CSRCS += stm32_sbutton.c
 endif
 
+ifeq ($(CONFIG_SENSORS_VL53L1X),y)
+  CSRCS += stm32_vl53l1x.c
+endif
+
 DEPPATH += --dep-path src
 VPATH += :src
 CFLAGS += ${INCDIR_PREFIX}$(TOPDIR)$(DELIM)arch$(DELIM)$(CONFIG_ARCH)$(DELIM)src$(DELIM)board$(DELIM)src

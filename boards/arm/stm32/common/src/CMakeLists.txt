@@ -158,4 +158,8 @@ if(CONFIG_INPUT_SBUTTON)
   list(APPEND SRCS stm32_sbutton.c)
 endif()
 
+if(CONFIG_SENSORS_VL53L1X)
+  list(APPEND SRCS stm32_vl53l1x.c)
+endif()
+
 target_sources(board PRIVATE ${SRCS})

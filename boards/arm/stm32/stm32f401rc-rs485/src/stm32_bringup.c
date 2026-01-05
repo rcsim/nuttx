@@ -101,6 +101,10 @@
 #include "stm32_max6675.h"
 #endif
 
+#ifdef CONFIG_SENSORS_VL53L1X
+#include "stm32_vl53l1x.h"
+#endif
+
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
@@ -400,6 +404,16 @@ int stm32_bringup(void)
   if (ret != OK)
     {
       aerr("ERROR: Failed to initialize hx711: %d\n", ret);
+    }
+#endif
+
+#ifdef CONFIG_SENSORS_VL53L1X
+  /* Configure and initialize the VL53L1X sensor */
+
+  ret = board_vl53l1x_initialize(0, 1);
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "ERROR: board_vl53l21x_initialize() failed: %d\n", ret);
     }
 #endif
 
